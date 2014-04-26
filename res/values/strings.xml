@@ -1,6 +1,8 @@
 <resources>
 
     <string name="app_name">QR Cards</string>
-    <string name="start_command">scan a card</string>
+    <string name="start_command">scan qr code</string>
+    <string name="card_scan_code">     SCAN NEW CODE</string>
+    <string name="card_scan_in_progress">Decoding photo..\nPlease wait.</string>
 
 </resources>
