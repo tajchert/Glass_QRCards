@@ -19,8 +19,9 @@ import android.location.Location;
 import android.location.LocationManager;
 
 public class Tools {
-	public static final String TAG = "QR_CARDS";
-
+	public static final String TAG = "QR_CARDS"; 
+	public static final String SEPARATOR = ";-;-;";
+	
 	public static boolean isNetworkAvailable(Context context) {
 		HttpGet httpGet = new HttpGet("http://www.google.com");
 		HttpParams httpParameters = new BasicHttpParams();

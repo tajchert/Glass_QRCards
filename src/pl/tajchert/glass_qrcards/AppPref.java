@@ -5,12 +5,11 @@ import java.util.Set;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 public class AppPref {
 	private Set<String> scans;
 	private SharedPreferences prefs;
-	private static final String SCAN_SET = "pl.tajchert.qrcodes.scanset";
+	private static final String SCAN_SET = "pl.tajchert.qrcodes.scan.set";
 
 	/**
 	 * @param prefs
@@ -33,15 +32,9 @@ public class AppPref {
 	
 	private void getSharedSet() {
 		scans = new HashSet<String>(prefs.getStringSet(SCAN_SET, new HashSet<String>()));
-		/*scans = prefs.getStringSet(SCAN_SET, null);
-		if(scans == null){
-			scans = new HashSet<String>();
-		}*/
-		Log.d(Tools.TAG, "scans.size: " + scans.size());
 	}
 
 	private void setSharedSet(Set<String> in) {
-		Log.d(Tools.TAG, "SAVE scans.size: " + scans.size());
 		prefs.edit().putStringSet(SCAN_SET, in).commit();
 	}
 	

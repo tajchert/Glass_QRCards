@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.google.android.glass.app.Card;
 
@@ -54,9 +53,10 @@ public class CardManager {
 		}
 		mCards.add(scanCard);
 	}
-	public void createResultCard(String content) {
+	public void createResultCard(String content, String desc) {
 		Card resultCard = new Card(context);
-		resultCard.setText(content);
+		resultCard.setText(content + "");
+		resultCard.setFootnote(desc + ""); 
 		if(mCards == null){
 			mCards = new ArrayList<Card>();
 		}
@@ -81,13 +81,14 @@ public class CardManager {
 		if(mCards == null){
 			mCards = new ArrayList<Card>();
 		}
+		String [] content;
 		if(scans != null && scans.size() > 0 ){
 			for (String scan : scans) {
+				content = scan.split(Tools.SEPARATOR);
 				Card cardScan = new Card(context);
-				String content = scan + "";
-				cardScan.setText(content); // Main text area
-				cardScan.setFootnote("");
-				cardScan.setImageLayout(Card.ImageLayout.LEFT);
+				cardScan.setText(content[0]  + ""); // Main text area
+				cardScan.setFootnote(content[1] + "");
+				//cardScan.setImageLayout(Card.ImageLayout.LEFT);
 				// cardPerson.addImage(R.drawable.ic_launcher);
 				// cardPerson.addImage(person.avatar);
 				mCards.add(cardScan);

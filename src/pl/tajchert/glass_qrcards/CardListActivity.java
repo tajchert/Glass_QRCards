@@ -4,7 +4,9 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
@@ -21,7 +23,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Toast;
 
 import com.esponce.webservice.QRCodeClient;
 import com.google.android.glass.app.Card;
@@ -31,7 +32,6 @@ import com.google.android.glass.widget.CardScrollView;
 
 public class CardListActivity extends Activity {
 
-	private static final String LIVE_CARD_ID = "bussiness_card";
 	private CardManager cardManager;
 	private List<Card> mCards = new ArrayList<Card>();
 	private CardScrollView mCardScrollView;
@@ -138,6 +138,7 @@ public class CardListActivity extends Activity {
 	//Picture to qrcode content via Esponce.com
 	public class GetQRCodeTask extends AsyncTask<Void, Void, Boolean> {
 		private String content;
+		private String date;
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			QRCodeClient client = new QRCodeClient();
@@ -162,6 +163,9 @@ public class CardListActivity extends Activity {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm   dd.MM");
+			Date dt = new Date();
+			date = sdf.format(dt);
 			return true;
 		}
 		@Override
@@ -172,8 +176,11 @@ public class CardListActivity extends Activity {
 			
 			if(content != null && appPref != null){
 				Log.d(Tools.TAG, "Content: " + content);
-				appPref.addScan(content);
-				cardManager.createResultCard(content);
+				
+				
+				
+				appPref.addScan(content + Tools.SEPARATOR + date);
+				cardManager.createResultCard(content, date);
 				scanCardNumber = 1;
 			}
 			cardManager.createScanCard();
