@@ -5,6 +5,7 @@ import java.util.Set;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 public class AppPref {
 	private Set<String> scans;
@@ -32,6 +33,7 @@ public class AppPref {
 	
 	private void getSharedSet() {
 		scans = prefs.getStringSet(SCAN_SET, null);
+		Log.d(Tools.TAG, "scans.size: " + scans.size());
 		if(scans == null){
 			scans = new HashSet<String>();
 		}

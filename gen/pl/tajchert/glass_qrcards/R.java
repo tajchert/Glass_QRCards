@@ -17,6 +17,7 @@ public final class R {
         public static final int app_name=0x7f040000;
         public static final int card_scan_code=0x7f040002;
         public static final int card_scan_in_progress=0x7f040003;
+        public static final int card_scan_too_fast=0x7f040004;
         public static final int start_command=0x7f040001;
     }
     public static final class style {

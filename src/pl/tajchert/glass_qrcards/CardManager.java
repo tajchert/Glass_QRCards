@@ -36,6 +36,15 @@ public class CardManager {
 		}
 		mCards.add(scanCard);
 	}
+	public void createScanTooFastCard() {
+		Card scanCard = new Card(context);
+		scanCard.setText(context.getResources().getString(R.string.card_scan_too_fast));
+		scanCard.setFootnote("");
+		if(mCards == null){
+			mCards = new ArrayList<Card>();
+		}
+		mCards.add(scanCard);
+	}
 	public void createScanProgressCard() {
 		Card scanCard = new Card(context);
 		scanCard.setText(context.getResources().getString(R.string.card_scan_in_progress));
@@ -44,6 +53,14 @@ public class CardManager {
 			mCards = new ArrayList<Card>();
 		}
 		mCards.add(scanCard);
+	}
+	public void createResultCard(String content) {
+		Card resultCard = new Card(context);
+		resultCard.setText(content);
+		if(mCards == null){
+			mCards = new ArrayList<Card>();
+		}
+		mCards.add(resultCard);
 	}
 	
 	public void createBussinessCard() {
@@ -60,7 +77,7 @@ public class CardManager {
 	}
 	
 
-	public void createListCards(Set<String> scans ) {
+	public void createListCards(Set<String> scans) {
 		if(mCards == null){
 			mCards = new ArrayList<Card>();
 		}

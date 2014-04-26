@@ -4,5 +4,6 @@
     <string name="start_command">scan qr code</string>
     <string name="card_scan_code">     SCAN NEW CODE</string>
     <string name="card_scan_in_progress">Decoding photo..\nPlease wait.</string>
+    <string name="card_scan_too_fast">Too fast.\nTake photo and wait 2 seconds before proceeding.</string>
 
 </resources>

@@ -37,6 +37,8 @@ public class CardListActivity extends Activity {
 	private CardScrollView mCardScrollView;
 	private ExampleCardScrollAdapter adapter;
 	
+	private int scanCardNumber = 0;
+	
 	//QRCode stuff
 	private File pictureFile;
 	private static final int TAKE_PICTURE_REQUEST = 1;
@@ -71,6 +73,7 @@ public class CardListActivity extends Activity {
 		
 		appPref = new AppPref(this);
 		cardManager.createScanCard();
+		scanCardNumber = 0;
 		cardManager.createListCards(appPref.getScans());
 		mCards = cardManager.getCards();
 		adapter.notifyDataSetChanged();
@@ -95,12 +98,9 @@ public class CardListActivity extends Activity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.d(Tools.TAG, "onActivityResult: " + resultCode);
 	    if (requestCode == TAKE_PICTURE_REQUEST && resultCode == RESULT_OK) {
 	        String picturePath = data.getStringExtra(CameraManager.EXTRA_PICTURE_FILE_PATH);
 	        processPicture(picturePath);
-	    }else{
-	    	//show too fast card
 	    }
 	    super.onActivityResult(requestCode, resultCode, data);
 	}
@@ -111,9 +111,28 @@ public class CardListActivity extends Activity {
 	    if (pictureFile.exists()) {
 	    	Log.d(Tools.TAG, "PICTURE READY");
 	    	new GetQRCodeTask().execute();
+	    }else{
+	    	new TooFastInfoTask().execute();
 	    }
 	}
-	
+	public class TooFastInfoTask extends AsyncTask<Void, Void, Boolean> {
+		@Override
+		protected Boolean doInBackground(Void... params) {
+			scanCardNumber = 1;
+	    	Log.d(Tools.TAG, "Too fast card");
+	    	mCards = new ArrayList<Card>();
+	    	cardManager.setCards(mCards);
+	    	cardManager.createScanTooFastCard();
+	    	cardManager.createScanCard();
+	    	
+	    	mCards = cardManager.getCards();
+			return true;
+		}
+		@Override
+		protected void onPostExecute(final Boolean success) {
+			adapter.notifyDataSetChanged();
+		}
+	}
 
 	
 	//Picture to qrcode content via Esponce.com
@@ -147,17 +166,22 @@ public class CardListActivity extends Activity {
 		}
 		@Override
 		protected void onPostExecute(final Boolean success) {
+			mCards = new ArrayList<Card>();
+			cardManager.setCards(mCards);
+			scanCardNumber = 0;
+			
 			if(content != null && appPref != null){
 				Log.d(Tools.TAG, "Content: " + content);
 				appPref.addScan(content);
+				cardManager.createResultCard(content);
+				scanCardNumber = 1;
 			}
-			mCards = new ArrayList<Card>();
-			cardManager.setCards(mCards);
 			cardManager.createScanCard();
 			cardManager.createListCards(appPref.getScans());
 			adapter.notifyDataSetChanged();
 		}
 	}
+	
 	
 	private class ExampleCardScrollAdapter extends CardScrollAdapter implements OnItemClickListener{
 		@Override
@@ -178,21 +202,11 @@ public class CardListActivity extends Activity {
 		}
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			Log.d(Tools.TAG, "CLICKED: " + position);
+			Log.d(Tools.TAG, "CLICKED: " + position + ", scan pos: " + scanCardNumber);
+			if(position == scanCardNumber){
+				takePicture();
+			}
 			Intent i = null;
-			switch (position) {
-				case 0:
-					takePicture();
-					break;
-				case 1:
-					break;
-			}
-			if(position != 0 && i != null){
-				i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				i.putExtra("dance", position);
-				Log.d(Tools.TAG, "putExtra: "+ position);
-				startService(i);
-			}
 		}
 	}
 }
