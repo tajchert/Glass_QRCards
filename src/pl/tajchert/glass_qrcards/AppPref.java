@@ -10,7 +10,7 @@ import android.util.Log;
 public class AppPref {
 	private Set<String> scans;
 	private SharedPreferences prefs;
-	private static final String SCAN_SET = "pl.tajchert.qrcodes.codeset";
+	private static final String SCAN_SET = "pl.tajchert.qrcodes.scanset";
 
 	/**
 	 * @param prefs
@@ -33,10 +33,10 @@ public class AppPref {
 	
 	private void getSharedSet() {
 		scans = prefs.getStringSet(SCAN_SET, null);
-		Log.d(Tools.TAG, "scans.size: " + scans.size());
 		if(scans == null){
 			scans = new HashSet<String>();
 		}
+		Log.d(Tools.TAG, "scans.size: " + scans.size());
 	}
 
 	private void setSharedSet(Set<String> in) {
