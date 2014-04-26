@@ -32,14 +32,16 @@ public class AppPref {
 	}
 	
 	private void getSharedSet() {
-		scans = prefs.getStringSet(SCAN_SET, null);
+		scans = new HashSet<String>(prefs.getStringSet(SCAN_SET, new HashSet<String>()));
+		/*scans = prefs.getStringSet(SCAN_SET, null);
 		if(scans == null){
 			scans = new HashSet<String>();
-		}
+		}*/
 		Log.d(Tools.TAG, "scans.size: " + scans.size());
 	}
 
 	private void setSharedSet(Set<String> in) {
+		Log.d(Tools.TAG, "SAVE scans.size: " + scans.size());
 		prefs.edit().putStringSet(SCAN_SET, in).commit();
 	}
 	
