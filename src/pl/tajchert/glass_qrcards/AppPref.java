@@ -31,13 +31,11 @@ public class AppPref {
 	}
 	
 	private void getSharedSet() {
+		scans = null;
 		scans = new HashSet<String>(prefs.getStringSet(SCAN_SET, new HashSet<String>()));
 	}
 
 	private void setSharedSet(Set<String> in) {
 		prefs.edit().putStringSet(SCAN_SET, in).commit();
 	}
-	
-	
-
 }

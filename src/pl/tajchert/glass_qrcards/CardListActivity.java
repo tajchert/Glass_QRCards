@@ -163,7 +163,7 @@ public class CardListActivity extends Activity {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm   dd.MM");
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm   dd.MM", java.util.Locale.getDefault());
 			Date dt = new Date();
 			date = sdf.format(dt);
 			return true;
@@ -176,9 +176,6 @@ public class CardListActivity extends Activity {
 			
 			if(content != null && appPref != null){
 				Log.d(Tools.TAG, "Content: " + content);
-				
-				
-				
 				appPref.addScan(content + Tools.SEPARATOR + date);
 				cardManager.createResultCard(content, date);
 				scanCardNumber = 1;
@@ -213,7 +210,6 @@ public class CardListActivity extends Activity {
 			if(position == scanCardNumber){
 				takePicture();
 			}
-			Intent i = null;
 		}
 	}
 }
