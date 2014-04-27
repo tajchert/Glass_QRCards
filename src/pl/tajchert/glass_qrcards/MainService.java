@@ -19,7 +19,7 @@ public class MainService extends Service {
 	
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		
-		Intent i = new Intent(this, CardListActivity.class);
+		Intent i = new Intent(this, ScanActivity.class);
 		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(i);
 		return START_STICKY;

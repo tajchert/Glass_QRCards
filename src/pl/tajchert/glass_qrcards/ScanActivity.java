@@ -30,13 +30,14 @@ import com.google.android.glass.media.CameraManager;
 import com.google.android.glass.widget.CardScrollAdapter;
 import com.google.android.glass.widget.CardScrollView;
 
-public class CardListActivity extends Activity {
+public class ScanActivity extends Activity {
 
 	private CardManager cardManager;
 	private List<Card> mCards = new ArrayList<Card>();
 	private CardScrollView mCardScrollView;
 	private ExampleCardScrollAdapter adapter;
 	
+	//Value that tell us on which position on list there is a card "tap to new scan", because sometimes on first position there is result/warning card
 	private int scanCardNumber = 0;
 	
 	//QRCode stuff
@@ -59,19 +60,16 @@ public class CardListActivity extends Activity {
 		mCardScrollView.setOnItemClickListener(adapter);
 		mCardScrollView.activate();
 		setContentView(mCardScrollView);
-		//Cards end
-		//takePicture() ;
-		
-		//TODO tmp
-		//cardManager.createBussinessCard();
 		
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+		//Clean card list, and get latest values 
 		appPref = new AppPref(this);
+		mCards = new ArrayList<Card>();
+    	cardManager.setCards(mCards);
 		cardManager.createScanCard();
 		scanCardNumber = 0;
 		cardManager.createListCards(appPref.getScans());
@@ -86,7 +84,7 @@ public class CardListActivity extends Activity {
 	
 
 	private void takePicture() {
-		//This is due to some problem (?) that user can approve photo only after 2-3 seconds, otherwise scanning would fail
+		//This is due saving picture that user can approve photo only after 2-3 seconds, otherwise scanning would fail
 		//Toast.makeText(getApplicationContext(), "Wait...", Toast.LENGTH_LONG).show();
 	    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 	    startActivityForResult(intent, TAKE_PICTURE_REQUEST);
@@ -109,21 +107,26 @@ public class CardListActivity extends Activity {
 	    pictureFile = new File(picturePath);
 	    path = picturePath;
 	    if (pictureFile.exists()) {
+	    	//Picture was successful taken and saved
 	    	Log.d(Tools.TAG, "PICTURE READY");
 	    	new GetQRCodeTask().execute();
 	    }else{
+	    	//Too fast, user should wait 2 second after taking a picture, due to saving it
 	    	new TooFastInfoTask().execute();
 	    }
 	}
+	
+	//Used to put class that user to fast jumped from taking picture to uploading it (it wasn't saved yet)
 	public class TooFastInfoTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			scanCardNumber = 1;
 	    	Log.d(Tools.TAG, "Too fast card");
+	    	//Clean list of card (to get rid of "please wait" card)
 	    	mCards = new ArrayList<Card>();
 	    	cardManager.setCards(mCards);
-	    	cardManager.createScanTooFastCard();
-	    	cardManager.createScanCard();
+	    	cardManager.createScanTooFastCard();//Add card with warning
+	    	cardManager.createScanCard();//Add card with new scan
 	    	
 	    	mCards = cardManager.getCards();
 			return true;
@@ -135,10 +138,12 @@ public class CardListActivity extends Activity {
 	}
 
 	
-	//Picture to qrcode content via Esponce.com
+	//Picture -> qrcode content via Esponce.com -> qr code content
 	public class GetQRCodeTask extends AsyncTask<Void, Void, Boolean> {
+		//used to pass code content and date of scan from Background to PostExecute
 		private String content;
 		private String date;
+		
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			QRCodeClient client = new QRCodeClient();
@@ -151,7 +156,7 @@ public class CardListActivity extends Activity {
             bfOptions.inTempStorage=new byte[32 * 1024];
             
 			Bitmap bMap = BitmapFactory.decodeFile(path ,bfOptions);
-			bMap = Bitmap.createScaledBitmap(bMap, 1200, 900, false);
+			bMap = Bitmap.createScaledBitmap(bMap, 1200, 900, false);//Lets change size to a bit smaller, I didn't experiment a lot with it so it can be not optimal
 			ByteArrayOutputStream bos = new ByteArrayOutputStream(); 
 			bMap.compress(CompressFormat.PNG, 0, bos); 
 			byte[] bitmapdata = bos.toByteArray();
@@ -170,18 +175,20 @@ public class CardListActivity extends Activity {
 		}
 		@Override
 		protected void onPostExecute(final Boolean success) {
+			//Clean list of card (to get rid of "please wait" card)
 			mCards = new ArrayList<Card>();
 			cardManager.setCards(mCards);
-			scanCardNumber = 0;
+			scanCardNumber = 0;//tap to scan card is first
 			
 			if(content != null && appPref != null){
+				//This is content of our qr code
 				Log.d(Tools.TAG, "Content: " + content);
 				appPref.addScan(content + Tools.SEPARATOR + date);
 				cardManager.createResultCard(content, date);
-				scanCardNumber = 1;
+				scanCardNumber = 1;//tap to scan card is second, first is card with result of current scan
 			}
 			cardManager.createScanCard();
-			cardManager.createListCards(appPref.getScans());
+			cardManager.createListCards(appPref.getScans());//Get historical scans and add as card
 			adapter.notifyDataSetChanged();
 		}
 	}
